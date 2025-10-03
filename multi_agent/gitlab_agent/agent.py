@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from google.adk.tools.agent_tool import AgentTool
 import gitlab
 import os
 from dotenv import load_dotenv
@@ -92,17 +93,14 @@ def list_configured_projects() -> dict:
 
 # --- Definição do Agente ---
 
-if not os.getenv("GOOGLE_API_KEY") or not os.getenv("GITLAB_PRIVATE_TOKEN"):
-    raise ValueError("As variáveis de ambiente GOOGLE_API_KEY e GITLAB_PRIVATE_TOKEN devem ser definidas.")
-
-root_agent = Agent(
-    name="gitlab_agent",
-    model="gemini-2.0-flash",
-    description=(
-        "Agente para interagir com o GitLab. Pode verificar a existência de branches ou listar os projetos configurados."
-    ),
-    instruction=(
-        "Você é um agente prestativo que responde a perguntas sobre projetos do GitLab."
-    ),
-    tools=[check_gitlab_branch, list_configured_projects]
-)
+gitlab_sub_agent = Agent(
+        name="gitlab_sub_agent",
+        model="gemini-2.5-flash",
+        description=(
+            "Agente para interagir com o GitLab. Pode verificar a existência de branches ou listar os projetos configurados."
+        ),
+        instruction=(
+            "Você é um agente prestativo que responde a perguntas sobre projetos do GitLab."
+        ),
+        tools=[check_gitlab_branch, list_configured_projects]
+    )
